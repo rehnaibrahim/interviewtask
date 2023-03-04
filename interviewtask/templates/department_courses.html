@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h4>Please fill out the form below:</h4><br><br>
+
+<label for="name">Name:</label>
+<input type="text" id="name" name="name"><br><br>
+
+<label for="dob">Date of Birth:</label>
+<input type="date" id="dob" name="dob"><br><br>
+
+<label for="age">Age:</label>
+<input type="text" id="age" name="age" min="1" max="120"><br><br>
+
+<label for="gender">Gender:</label>
+<select id="gender" name="gender">
+<option value="">Select Gender</option>
+<option value="male">Male</option>
+<option value="female">Female</option>
+<option value="other">Other</option>
+</select><br><br>
+
+<label for="phone">Phone Number:</label>
+<input type="tel" id="phone" name="phone" pattern="[0-9]{10}"><br><br>
+
+<label for="email">Email:</label>
+<input type="email" id="email" name="email"><br><br>
+
+<label for="address">Address:</label>
+<textarea id="address" name="address" style="position:absolute; left:70px; top:438px;"></textarea><br><br><br>
+
+  <label>Select the department:</label>
+
+    <select id="id_department">
+      <option value="">------------</option>
+      {% for department in departments %}
+        <option value="{{ department.id }}">{{ department.name }}</option>
+      {% endfor %}
+    </select><br><br>
+
+<label>Select the course:</label>
+    <select id="id_course">
+      <option value="">-------------</option>
+    </select>
+
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $('#id_department').change(function() {
+        var url = '{% url "ajax_load_courses" %}';
+        var departmentId = $(this).val();
+
+        $.ajax({
+          url: url,
+          data: {
+            'department': departmentId
+          },
+          success: function(data) {
+            var courses = $('#id_course');
+            courses.empty();
+
+            $.each(data, function(i, item) {
+              courses.append($('<option>', {
+                value: item.id,
+                text: item.name
+              }));
+            });
+          }
+        });
+      });
+    });
+  </script><br><br>
+
+<label for="purpose">Purpose:</label>
+<select id="purpose" name="purpose">
+<option value="">Select Purpose</option>
+<option value="enquiry">Enquiry</option>
+<option value="place_order">Request</option>
+<!--<option value="return">Return</option>-->
+</select><br><br>
+
+<label>Materials:</label>
+
+<div style="position:absolute; left:100px; top:687px;">
+<input type="checkbox" id="debitnotebook" name="materials" value="debitnotebook">
+<label>Debit Notebook</label><br>
+<input type="checkbox" id="pen" name="materials" value="pen">
+<label >Pen</label><br>
+<input type="checkbox" id="exampapers" name="materials" value="exampapers">
+<label for="exampapers">Exam Papers</label><br>
+  <input type="checkbox" id="hallticket" name="materials" value="hallticket">
+<label for="exampapers">Hall Ticket</label>
+</div><br><br><br><br><br><br>
+
+<form method="post" action="">
+  {% csrf_token %}
+
+<input type="submit" value="Submit" onclick="showMessageBox(); return false;">
+    <input type="button" value="Logout" onclick="location.href='/credentials/login'">
+</form>
+	<div id="message-box">
+		<p>Thank you for submitting</p>
+		<p><a href="/">Click here to go to homepage</a></p>
+	</div>
+	<script>
+		function showMessageBox() {
+			document.getElementById("message-box").style.display = "block";
+		}
+	</script>
+
+
+{% endblock %}
